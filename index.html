@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rama Technical Educational Institute – Student Result Portal</title>
+<!-- jsPDF & autoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.container {
+    background: #fff;
+    padding: 30px 25px;
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    width: 600px;
+}
+h1 {text-align: center; color: #6a11cb;}
+h3 {text-align: center; color: #555;}
+label {font-weight: bold; margin-top: 10px; display: block;}
+input, select, button {width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc;}
+button {background: linear-gradient(to right, #2575fc, #6a11cb); color: white; font-weight: 600; border: none; cursor: pointer;}
+button:hover {opacity: 0.9;}
+table {width: 100%; border-collapse: collapse; margin-top: 15px;}
+table, th, td {border: 1px solid #555;}
+th, td {padding: 10px; text-align: left;}
+th {background: #6a11cb; color: white;}
+.action-btns {text-align: center; margin-top: 10px;}
+.action-btns button {width: 100%; margin: 5px 0;}
+#result p {text-align:center; color:orange; font-weight:bold; font-size:18px;}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Rama Technical Educational Institute</h1>
+    <h3>Student Result Portal</h3>
+
+    <!-- Form Section -->
+    <div id="formSection" style="display:none;">
+        <label>Roll Number</label>
+        <input type="text" id="roll" placeholder="Enter Roll Number">
+
+        <label>Software Name</label>
+        <select id="software">
+            <option value="">Select Software</option>
+            <option value="Fundamental">Fundamental</option>
+            <option value="Photoshop">Photoshop</option>
+            <option value="CorelDRAW">CorelDRAW</option>
+            <option value="PageMaker">PageMaker</option>
+            <option value="MS Word">MS Word</option>
+            <option value="MS Excel">MS Excel</option>
+            <option value="MS PowerPoint">MS PowerPoint</option>
+            <option value="Tally">Tally</option>
+            <option value="HTML">HTML</option>
+            <option value="MS Access">MS Access</option>
+        </select>
+
+        <button onclick="checkResult()">Check Result</button>
+    </div>
+
+    <!-- Result Section -->
+    <div id="result">
+        <!-- Default Coming Soon message will be injected by JS -->
+    </div>
+</div>
+
+<script>
+// Result enable flag: true = form visible, false = coming soon
+let resultActive = false; // <-- change to true to enable result checking
+
+const formDiv = document.getElementById("formSection");
+const resultDiv = document.getElementById("result");
+
+function initialize() {
+    if(resultActive){
+        formDiv.style.display = "block";
+        resultDiv.style.display = "none";
+    } else {
+        formDiv.style.display = "none";
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "<p>Result Coming Soon!</p>";
+    }
+}
+
+// Sample student data
+const data = [
+    { roll: "101", software: "Fundamental", name: "Rahul Kumar", father: "Suresh Kumar", marks: "78%" },
+    { roll: "102", software: "Photoshop", name: "Sneha Sharma", father: "Ramesh Sharma", marks: "82%" },
+    { roll: "103", software: "CorelDRAW", name: "Aakash Gupta", father: "Vikram Gupta", marks: "91%" },
+    { roll: "201", software: "PageMaker", name: "Aman Verma", father: "Rajesh Verma", marks: "74%" },
+    { roll: "202", software: "MS Word", name: "Kiran Pandey", father: "Sanjay Pandey", marks: "67%" },
+    { roll: "301", software: "MS Excel", name: "Priya Gupta", father: "Vikash Gupta", marks: "69%" },
+    { roll: "302", software: "MS PowerPoint", name: "Rohit Singh", father: "Ajay Singh", marks: "72%" },
+    { roll: "401", software: "Tally", name: "Ravi Singh", father: "Mahesh Singh", marks: "88%" },
+    { roll: "402", software: "HTML", name: "Muskan Sharma", father: "Pankaj Sharma", marks: "93%" },
+{ roll: "500", software: "HTML", name: "Sharma", father: "Sharma", marks: "93%" },
+    { roll: "403", software: "MS Access", name: "Anjali Verma", father: "Raj Verma", marks: "85%" }
+];
+
+function checkResult() {
+    let roll = document.getElementById("roll").value.trim();
+    let software = document.getElementById("software").value;
+
+    let student = data.find(s => s.roll === roll && s.software === software);
+
+    if(student) {
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = `
+            <table>
+                <tr><th colspan="2">Institute Information</th></tr>
+                <tr><td>Institute Name</td><td>Rama Technical Educational Institute</td></tr>
+                <tr><td>Address</td><td>Mishrauliya Bazar, Maharajganj, Pincode 273157</td></tr>
+                <tr><td>Phone</td><td>9519686125</td></tr>
+                <tr><td>Email</td><td>dkp5406@gmail.com</td></tr>
+            </table>
+
+            <table>
+                <tr><th colspan="2">Student Result</th></tr>
+                <tr><td>Name</td><td>${student.name}</td></tr>
+                <tr><td>Father's Name</td><td>${student.father}</td></tr>
+                <tr><td>Roll No</td><td>${student.roll}</td></tr>
+                <tr><td>Software Name</td><td>${student.software}</td></tr>
+                <tr><td>Marks</td><td>${student.marks}</td></tr>
+            </table>
+
+            <div class="action-btns">
+                <button onclick="downloadPDF()">Download PDF</button>
+            </div>
+        `;
+    } else {
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "<p style='color:red; font-weight:600;'>No result found!</p>";
+    }
+}
+
+function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Rama Technical Educational Institute", 105, 15, null, null, "center");
+    doc.setFontSize(12);
+    doc.text("Mishrauliya Bazar, Maharajganj, Pincode 273157", 105, 22, null, null, "center");
+    doc.text("Phone: 9519686125 | Email: dkp5406@gmail.com", 105, 29, null, null, "center");
+
+    let yOffset = 40;
+
+    doc.autoTable({
+        startY: yOffset,
+        head: [['Institute Info', 'Details']],
+        body: [
+            ['Institute Name', 'Rama Technical Educational Institute'],
+            ['Address', 'Mishrauliya Bazar, Maharajganj, Pincode 273157'],
+            ['Phone', '9519686125'],
+            ['Email', 'dkp5406@gmail.com']
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [106,17,203], textColor: 255 },
+    });
+
+    yOffset = doc.lastAutoTable.finalY + 10;
+
+    let roll = document.getElementById("roll").value.trim();
+    let software = document.getElementById("software").value;
+    let student = data.find(s => s.roll === roll && s.software === software);
+
+    doc.autoTable({
+        startY: yOffset,
+        head: [['Student Result', '']],
+        body: [
+            ['Name', student.name],
+            ["Father's Name", student.father],
+            ['Roll No', student.roll],
+            ['Software Name', student.software],
+            ['Marks', student.marks]
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [106,17,203], textColor: 255 },
+    });
+
+    doc.save('Result.pdf');
+}
+
+// Initialize page
+window.onload = initialize;
+</script>
+
+</body>
+</html>
